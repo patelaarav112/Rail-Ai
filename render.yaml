@@ -1,0 +1,21 @@
+# Render Blueprint — deploys the RailMind AI backend as a free web service.
+# On render.com: New + -> Blueprint -> pick this repo -> Render reads this
+# file automatically and fills in the settings below.
+services:
+  - type: web
+    name: railmind-backend
+    runtime: python
+    plan: free
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    startCommand: uvicorn main:app --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.11.9
+      - key: RAILMIND_SECRET_KEY
+        generateValue: true
+      # No DATABASE_URL set -> falls back to SQLite on the container's local
+      # disk. Free plan has no persistent disk, so the DB resets to the
+      # seeded demo data whenever the service restarts/redeploys — expected
+      # for a free public demo. Add a Postgres instance + DATABASE_URL later
+      # if you want data to persist permanently.
